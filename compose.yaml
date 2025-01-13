@@ -1,0 +1,57 @@
+name: 'flyway-multi-db-sample'
+
+services:
+  migrator:
+    container_name: migrator-container
+    hostname: migrator-server
+    image: migrator/app:dev
+    build:
+      context: .
+      dockerfile: ./infra/docker/migrator/Dockerfile
+      cache_from:
+        - migrator/app:cache
+      target: dev
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - default
+    ports:
+      - '18085:8080'
+    volumes:
+      - ./flyway-multi-db:/app
+
+  postgres:
+    container_name: flyway-sample-postgres-container
+    hostname: flyway-sample-postgres-server
+    image: flyway-sample/postgres:dev
+    build:
+      context: .
+      dockerfile: ./infra/docker/postgres/Dockerfile
+      cache_from:
+        - flyway-sample/postgres:cache
+    restart: always
+    ports:
+      - '15436:5432'
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASS:-test}
+    volumes:
+      - postgres-data-volume:/var/lib/postgresql/data
+      - ./infra/docker/postgres/init:/docker-entrypoint-initdb.d/
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -D sample_db_1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  default:
+    name: flyway-multi-db
+
+volumes:
+  postgres-data-volume:
+    name: flyway-multi-db-postgres-data
+    driver: local
