@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    first:
+      jdbcUrl: jdbc:postgresql://postgres:5432/sample_db_first
+      username: user1
+      password: password1
+      driver-class-name: org.postgresql.Driver
+    second:
+      jdbcUrl: jdbc:postgresql://postgres:5432/sample_db_second
+      username: user2
+      password: password2
+      driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
