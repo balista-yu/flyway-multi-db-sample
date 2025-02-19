@@ -13,15 +13,20 @@ services:
       target: dev
     depends_on:
       - postgres
-    restart: always
     env_file:
       - app-local.env
     networks:
       - default
     ports:
       - '18085:8080'
-    volumes:
-      - ./flyway-multi-db:/app
+    develop:
+      watch:
+        - action: sync
+          path: ./flyway-multi-db
+          target: /app
+        - action: rebuild
+          path: ./flyway-multi-db/build.gradle.kts
+    command: ["sh", "start.sh"]
 
   postgres:
     container_name: flyway-sample-postgres-container

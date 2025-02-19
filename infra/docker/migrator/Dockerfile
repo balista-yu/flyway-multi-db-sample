@@ -1,3 +1,9 @@
+FROM eclipse-temurin:21-jdk AS dev
+
+WORKDIR /app
+
+COPY /flyway-multi-db /app
+
 FROM gradle:8.11.1-jdk21 AS build
 
 WORKDIR /app
@@ -10,21 +16,6 @@ RUN gradle clean build -x test --parallel --no-daemon || return 0
 
 COPY /flyway-multi-db/src /app/src
 RUN gradle clean build -x test --no-daemon
-
-FROM eclipse-temurin:21-jdk AS dev
-
-WORKDIR /app
-
-COPY /flyway-multi-db /app
-
-EXPOSE 8080
-
-RUN chmod +x ./start.sh
-
-# -x testでビルド中のテストをskip
-RUN ./gradlew clean getDependencies -x test --stacktrace
-
-CMD ["sh", "start.sh"]
 
 FROM eclipse-temurin:21-jdk AS prod
 
