@@ -17,5 +17,5 @@ $ git clone https://github.com/balista-yu/flyway-multi-db-sample.git
 2. Run docker compose
 ```
 $ cd flyway-multi-db-sample
-$ task up
+$ task watch
 ```
